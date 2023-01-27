@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "375802162080",
+    "project_id": "vtroom-24670",
+    "storage_bucket": "vtroom-24670.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:375802162080:android:d9d7d810ab4501dd5092c5",
+        "android_client_info": {
+          "package_name": "com.example.vtroom"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "375802162080-erqf3t5kom72udkdt7d2jq9b53b88f19.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.vtroom",
+            "certificate_hash": "657c54dd8f8536601c3383fdf9688afa059727cd"
+          }
+        },
+        {
+          "client_id": "375802162080-l80jldlligdvm1ndahb2p12qc7bin69o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbzLysQen3VNVLzJf7ILWDKBZ4hU7wics"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "375802162080-l80jldlligdvm1ndahb2p12qc7bin69o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
