@@ -43,6 +43,9 @@ dependencies:
   country_code_picker: ^2.0.2
   pinput: ^1.2.0
   cloud_firestore: ^4.3.1
+  get: ^4.6.5
+  foundation_flutter: ^0.2.0
+
 
 dev_dependencies:
   flutter_test:
@@ -72,6 +75,7 @@ flutter:
     - assets/images/welscreen.png
     - assets/images/login.png
     - assets/images/OTP.png
+    - assets/images/sunglass.PNG
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

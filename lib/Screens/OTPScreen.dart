@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pinput/pin_put/pin_put.dart';
-import 'package:vtroom/Screens/HomePage.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:vtroom/Screens/home_screen/HomePage.dart';
+
 
 class OTPControllerScreen extends StatefulWidget {
   final String phone;

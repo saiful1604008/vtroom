@@ -2,7 +2,7 @@ import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:vtroom/Screens/OTPScreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:vtroom/Screens/HomePage.dart';
+import 'package:vtroom/Screens/home_screen/HomePage.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -95,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   final FirebaseFirestore firestore =
                       FirebaseFirestore.instance;
                   final CollectionReference usersCollection =
-                      firestore.collection('users');
+                  firestore.collection('users');
                   final QuerySnapshot snapshot = await usersCollection
                       .where("phone", isEqualTo: _controller.text)
                       .get();
@@ -103,9 +103,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     saveDataToFirestore(_controller.text, dialCodeDigits);
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (c) => OTPControllerScreen(
-                              phone: _controller.text,
-                              codeDigits: dialCodeDigits,
-                            )));
+                          phone: _controller.text,
+                          codeDigits: dialCodeDigits,
+                        )));
                   } else {
                     // Phone number found in Firestore
                     Navigator.of(context)

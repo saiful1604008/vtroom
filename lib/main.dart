@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:vtroom/Screens//SplashScreen.dart';
 import 'package:vtroom/Screens//WelcomeScreen.dart';
 import 'package:vtroom/Screens//LoginPage.dart';
-import 'package:vtroom/Screens/HomePage.dart';
+import 'package:vtroom/Screens/home_screen/HomePage.dart';
 
 
 void main() async{
