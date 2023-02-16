@@ -5,12 +5,19 @@ import 'package:vtroom/Screens/LoginPage.dart';
 import 'package:vtroom/Screens/NavigationDrawerScreen.dart';
 import 'package:get/get.dart';
 import 'package:flutter/foundation.dart';
+import 'package:vtroom/Screens/Glass/men.dart';
 
 class Category {
   final String title;
   final String image;
 
   Category({required this.title, required this.image});
+}
+
+class Banner {
+  final String url;
+
+  Banner({required this.url});
 }
 
 class HomeScreen extends StatefulWidget {
@@ -22,6 +29,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore firestoreInstance = FirebaseFirestore.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -51,21 +59,32 @@ class _HomeScreenState extends State<HomeScreen> {
               // banner
               SizedBox(
                 height: size.height / 3.5,
-                width: size.width ,
-                child: PageView.builder(
-                  itemCount: 4,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage(
-                                'assets/images/sunglass.PNG',
+                width: size.width,
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('Banners')
+                      .snapshots(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (!snapshot.hasData) {
+                      return Center(child: CircularProgressIndicator());
+                    }
+                    return PageView.builder(
+                      itemCount: snapshot.data?.docs.length,
+                      itemBuilder: (context, index) {
+                        DocumentSnapshot banner = snapshot.data!.docs[index];
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: NetworkImage(banner["url"]),
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
-                        ),
-                      ),
+                        );
+                      },
                     );
                   },
                 ),
@@ -78,16 +97,83 @@ class _HomeScreenState extends State<HomeScreen> {
                 width: size.width,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    for (int i = 0; i < 4; i++) indicator(size, false)
-                  ],
+                  children: [for (int i = 0; i < 2; i++) indicator(size, true)],
                 ),
               ),
 
               // .....categories.....
               categoriesTitle(size, "All Categories", () {}),
 
-              listViewBuilder(size),
+              SizedBox(
+                height: size.height / 2,
+                width: size.width,
+                child: FutureBuilder<List<Category>>(
+                  future: fetchCategoriesFromFirestore(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<List<Category>> snapshot) {
+                    if (!snapshot.hasData) {
+                      return Center(child: CircularProgressIndicator());
+                    }
+                    return GridView.builder(
+                      itemCount: snapshot.data!.length,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        childAspectRatio: size.width / (size.height / 3),
+                      ),
+                      itemBuilder: (BuildContext context, int index) {
+                        Category category = snapshot.data![index];
+                        return GestureDetector(
+                          onTap: () {
+                            switch (index) {
+                              case 0:
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => MenSunglassesPage(),
+                                  ),
+                                );
+                                break;
+                              case 1:
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => LoginScreen(),
+                                  ),
+                                );
+                                break;
+                              case 2:
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => LoginScreen(),
+                                  ),
+                                );
+                                break;
+                            }
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.teal[300],
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            margin: EdgeInsets.all(8),
+                            child: Center(
+                              child: Text(
+                                category.title,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
 
               SizedBox(
                 height: size.height / 25,
@@ -97,6 +183,19 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  Future<List<Banner>> fetchBannersFromFirestore() async {
+    List<Banner> banner = [];
+    var firestore = FirebaseFirestore.instance;
+    var query = firestore.collection("Banners");
+    var snapshot = await query.get();
+    snapshot.docs.forEach((document) {
+      banner.add(Banner(
+        url: document.data()["url"],
+      ));
+    });
+    return banner;
   }
 
   Future<List<Category>> fetchCategoriesFromFirestore() async {
@@ -111,49 +210,6 @@ class _HomeScreenState extends State<HomeScreen> {
     return categories;
   }
 
-  Widget listViewBuilder(Size size) {
-    return FutureBuilder(
-      future: fetchCategoriesFromFirestore(),
-      builder: (context, AsyncSnapshot<List<Category>> snapshot) {
-        if (!snapshot.hasData) {
-          return CircularProgressIndicator();
-        }
-        return Container(
-          height: size.height / 4,
-          width: size.width,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: snapshot.data?.length,
-            itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    Container(
-                      height: size.height / 5,
-                      width: size.width / 3.5,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: NetworkImage(snapshot.data![index].image),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: size.height / 500),
-                    Text(
-                      snapshot.data![index].title,
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        );
-      },
-    );
-  }
-
   Widget categoriesTitle(Size size, String title, Function function) {
     return SizedBox(
       height: size.height / 15,
@@ -166,16 +222,6 @@ class _HomeScreenState extends State<HomeScreen> {
             style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w500,
-            ),
-          ),
-          TextButton(
-            onPressed: () => function(),
-            child: const Text(
-              "View More",
-              style: TextStyle(
-                color: Colors.blue,
-                fontSize: 15,
-              ),
             ),
           ),
         ],
