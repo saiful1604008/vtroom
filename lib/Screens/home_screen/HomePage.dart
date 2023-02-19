@@ -117,7 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     return GridView.builder(
                       itemCount: snapshot.data!.length,
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
+                        crossAxisCount: 3,
                         childAspectRatio: size.width / (size.height / 3),
                       ),
                       itemBuilder: (BuildContext context, int index) {
@@ -153,7 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           },
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.teal[300],
+                              color: Colors.grey[400],
                               borderRadius: BorderRadius.circular(10),
                             ),
                             margin: EdgeInsets.all(8),
@@ -161,7 +161,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: Text(
                                 category.title,
                                 style: const TextStyle(
-                                  color: Colors.white,
+                                  color: Colors.black,
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -220,6 +220,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Text(
             title,
             style: const TextStyle(
+              color: Colors.blue,
               fontSize: 20,
               fontWeight: FontWeight.w500,
             ),

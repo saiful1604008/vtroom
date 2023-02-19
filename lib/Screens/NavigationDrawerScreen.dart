@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:vtroom/Screens/LoginPage.dart';
+import 'package:vtroom/Screens/CartList.dart';
 
 class NavigationDrawer extends StatefulWidget {
   @override
@@ -43,6 +44,8 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
             title: Text("Cart"),
             onTap: () {
               // Navigate to cart screen
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (c) => CartPage()));
             },
           ),
           ListTile(

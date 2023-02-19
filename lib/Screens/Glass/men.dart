@@ -40,6 +40,36 @@ class _MenSunglassesPage extends State<MenSunglassesPage> {
     });
   }
 
+  void _addToCart(Product product) async {
+    final cartQuerySnapshot = await FirebaseFirestore.instance
+        .collection('cart')
+        .where('name', isEqualTo: product.name)
+        .get();
+    if (cartQuerySnapshot.docs.length > 0) {
+      // item is already in cart, show a message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${product.name} is already in the cart'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    } else {
+      // item is not in cart, add it
+      await FirebaseFirestore.instance.collection('cart').add({
+        'name': product.name,
+        'imageUrl': product.imageUrl,
+        'price': product.price
+      });
+      // show a message to confirm the item has been added to the cart
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${product.name} added to the cart'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -104,8 +134,9 @@ class _MenSunglassesPage extends State<MenSunglassesPage> {
                         children: [
                           MaterialButton(
                             color: Colors.teal[200],
-                            onPressed: () {
-                              // TODO: Implement add to cart functionality.
+                            onPressed: () async {
+                              // Add product to database
+                              _addToCart(product);
                             },
                             child: const Text('Add to Cart'),
                           ),
