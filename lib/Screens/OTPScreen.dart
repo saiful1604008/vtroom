@@ -1,7 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pinput/pin_put/pin_put.dart';
-import 'package:vtroom/Screens/home_screen/HomePage.dart';
+import 'package:vtroom/Screens/LoginPage.dart';
+
 
 
 class OTPControllerScreen extends StatefulWidget {
@@ -37,29 +38,29 @@ class _OTPControllerScreenState extends State<OTPControllerScreen> {
   }
 
   /**checkIfPhoneNumberExists() async {
-    final phone = "${widget.phone}";
-    final querySnapshot = await FirebaseFirestore.instance
-        .collection("users")
-        .where("phone", isEqualTo: phone)
-        .get();
-    if (querySnapshot.docs.isNotEmpty) {
+      final phone = "${widget.phone}";
+      final querySnapshot = await FirebaseFirestore.instance
+      .collection("users")
+      .where("phone", isEqualTo: phone)
+      .get();
+      if (querySnapshot.docs.isNotEmpty) {
       Navigator.of(context)
-          .push(MaterialPageRoute(builder: (c) => HomeScreen()));
-    } else {
+      .push(MaterialPageRoute(builder: (c) => HomeScreen()));
+      } else {
       verifyPhoneNumber();
-    }
-  }**/
+      }
+      }**/
 
   verifyPhoneNumber() async {
     await FirebaseAuth.instance.verifyPhoneNumber(
-      phoneNumber: "${widget.codeDigits + widget.phone}",
+      phoneNumber: "${widget.phone}",
       verificationCompleted: (PhoneAuthCredential credential) async {
         await FirebaseAuth.instance
             .signInWithCredential(credential)
             .then((value) {
           if (value.user != null) {
             Navigator.of(context)
-                .push(MaterialPageRoute(builder: (c) => HomeScreen()));
+                .push(MaterialPageRoute(builder: (c) => LoginScreen()));
           }
         });
       },
@@ -113,7 +114,7 @@ class _OTPControllerScreenState extends State<OTPControllerScreen> {
                   verifyPhoneNumber();
                 },
                 child: Text(
-                  "OTP has been sent to the number: ${widget.codeDigits}-${widget.phone}",
+                  "OTP has been sent to the number: ${widget.phone}",
                   style: const TextStyle(
                       fontWeight: FontWeight.normal, fontSize: 16),
                   textAlign: TextAlign.center,
@@ -138,11 +139,11 @@ class _OTPControllerScreenState extends State<OTPControllerScreen> {
                 try {
                   await FirebaseAuth.instance
                       .signInWithCredential(PhoneAuthProvider.credential(
-                          verificationId: VerificationCode!, smsCode: pin))
+                      verificationId: VerificationCode!, smsCode: pin))
                       .then((value) {
                     if (value.user != null) {
                       Navigator.of(context).push(
-                          MaterialPageRoute(builder: (c) => HomeScreen()));
+                          MaterialPageRoute(builder: (c) => LoginScreen()));
                     }
                   });
                 } catch (e) {

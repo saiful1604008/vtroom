@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:vtroom/Screens/LoginPage.dart';
+import 'package:vtroom/Screens/SignUp.dart';
 
 class WelcomeScreen extends StatelessWidget {
-  const WelcomeScreen({super.key});
+  const WelcomeScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -26,8 +27,8 @@ class WelcomeScreen extends StatelessWidget {
                 ),
                 Text(
                     'this is a demo application for the use of user. User can '
-                    'try glasses and buy of their own choice',
-                    style: Theme.of(context).textTheme.bodySmall,
+                        'try glasses and buy of their own choice',
+                    style: Theme.of(context).textTheme.bodyText2,
                     textAlign: TextAlign.center),
               ],
             ),
@@ -44,11 +45,11 @@ class WelcomeScreen extends StatelessWidget {
                     padding: EdgeInsets.all(10.0),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(18.0),
-                      side: BorderSide(color: Colors.black12),
+                      side: BorderSide(color: Colors.black),
                     ),
-                    color: Colors.teal,
+                    color: Colors.black,
                     child: const Text(
-                      'GET STARTED',
+                      'LOGIN',
                       style: TextStyle(color: Colors.white, fontSize: 20),
                       textAlign: TextAlign.center,
                     ),
@@ -56,6 +57,27 @@ class WelcomeScreen extends StatelessWidget {
                 ),
                 const SizedBox(
                   width: 10,
+                ),
+                Expanded(
+                  child: MaterialButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => SignupPage()));
+                    },
+                    padding: EdgeInsets.all(10.0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18.0),
+                      side: BorderSide(color: Colors.teal),
+                    ),
+                    color: Colors.teal,
+                    child: const Text(
+                      'SIGNUP',
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
                 ),
               ],
             ),

@@ -1,133 +1,118 @@
-import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:vtroom/Screens/OTPScreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:vtroom/Screens/home_screen/HomePage.dart';
+import 'package:country_code_picker/country_code_picker.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
-
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  _LoginScreenState createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  String dialCodeDigits = "+880";
-  TextEditingController _controller = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  String _errorText = '';
+  String _countryCode = '+880';
 
-  void saveDataToFirestore(String phone, String codeDigits) async {
-    final FirebaseFirestore firestore = FirebaseFirestore.instance;
-    final CollectionReference usersCollection = firestore.collection('users');
-
-    try {
-      await usersCollection.add({
-        'phone': phone,
-        'codeDigits': codeDigits,
+  void _submit() async {
+    final phone = _countryCode + _phoneController.text.trim();
+    final usersRef = FirebaseFirestore.instance.collection('signup');
+    final userDoc = await usersRef.doc(phone).get();
+    if (!userDoc.exists) {
+      setState(() {
+        _errorText = 'Phone number not found';
       });
-      print("Data added successfully to Firestore");
-    } catch (e) {
-      print("Error adding data to Firestore: $e");
+      return;
     }
+    // Save user's login information in a collection called 'logins'
+    // with the document ID set to the user's phone number
+    final loginsRef = FirebaseFirestore.instance.collection('logins');
+    final loginData = {
+      'phone': phone,
+      'timestamp': FieldValue.serverTimestamp(),
+    };
+    await loginsRef.doc(phone).set(loginData);
+    // Give access to the home page
+    Navigator.pushReplacementNamed(context, '/home');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const SizedBox(
-              height: 30,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-              child: Image.asset("assets/images/login.png"),
-            ),
-            Container(
-              margin: EdgeInsets.only(top: 10),
-              child: const Center(
-                child: Text(
-                  "Welcome to the Login Section",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+      body: Center(
+        child: Container(
+          width: 300,
+          padding: EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: Colors.grey),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Welcome! to the Login Section',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 16),
+              Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        CountryCodePicker(
+                          onChanged: (code) {
+                            setState(() {
+                              _countryCode = code.toString();
+                            });
+                          },
+                          initialSelection: 'BD',
+                          favorite: ['+880'],
+                          showCountryOnly: false,
+                          showOnlyCountryWhenClosed: false,
+                          alignLeft: false,
+                        ),
+                        SizedBox(width: 16),
+                        Expanded(
+                          child: TextFormField(
+                            controller: _phoneController,
+                            keyboardType: TextInputType.phone,
+                            decoration: InputDecoration(
+                              labelText: 'Phone',
+                              hintText: 'Enter your phone number',
+                              errorText: _errorText,
+                            ),
+                            validator: (value) {
+                              if (value!.trim().isEmpty) {
+                                return 'Phone number is required';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          _submit();
+                        }
+                      },
+                      child: Text('Login'),
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.teal, // set the background color
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                              10), // set the radius border
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-            const SizedBox(
-              height: 50,
-            ),
-            SizedBox(
-              width: 400,
-              height: 60,
-              child: CountryCodePicker(
-                onChanged: (country) {
-                  setState(() {
-                    dialCodeDigits = country.dialCode!;
-                  });
-                },
-                initialSelection: "BD",
-                showCountryOnly: false,
-                showOnlyCountryWhenClosed: false,
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.only(top: 10, right: 10, left: 10),
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: "Phone Number",
-                  labelStyle: TextStyle(color: Colors.teal),
-                  prefix: Padding(
-                    padding: EdgeInsets.all(4),
-                    child: Text(dialCodeDigits),
-                  ),
-                ),
-                maxLength: 11,
-                keyboardType: TextInputType.number,
-                controller: _controller,
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.all(15),
-              width: double.infinity,
-              child: MaterialButton(
-                onPressed: () async {
-
-                  final FirebaseFirestore firestore =
-                      FirebaseFirestore.instance;
-                  final CollectionReference usersCollection =
-                  firestore.collection('users');
-                  final QuerySnapshot snapshot = await usersCollection
-                      .where("phone", isEqualTo: _controller.text)
-                      .get();
-                  if (snapshot.docs.length == 0) {
-                    saveDataToFirestore(_controller.text, dialCodeDigits);
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (c) => OTPControllerScreen(
-                          phone: _controller.text,
-                          codeDigits: dialCodeDigits,
-                        )));
-                  } else {
-                    // Phone number found in Firestore
-                    Navigator.of(context)
-                        .push(MaterialPageRoute(builder: (c) => HomeScreen()));
-                  }
-                },
-
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18.0),
-                  side: BorderSide(color: Colors.black12),
-                ),
-                color: Colors.teal,
-                child: const Text(
-                  'Next',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
